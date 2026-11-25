@@ -1,0 +1,24 @@
+name: DragonWingCode
+options:
+  bundleIdPrefix: dev.dragonwing
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  DragonWingCode:
+    type: application
+    platform: iOS
+    sources:
+      - path: DragonWingCode
+      - path: Resources
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.dragonwing.code
+        PRODUCT_NAME: DragonWing Code
+        SWIFT_VERSION: 5.9
+        TARGETED_DEVICE_FAMILY: "1,2"
+        INFOPLIST_KEY_CFBundleDisplayName: DragonWing Code
+        INFOPLIST_KEY_UIFileSharingEnabled: YES
+        INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace: YES
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_STYLE: Automatic
