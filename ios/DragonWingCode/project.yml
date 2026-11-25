@@ -9,8 +9,6 @@ targets:
     platform: iOS
     sources:
       - path: DragonWingCode
-      - path: Resources
-        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.dragonwing.code
