@@ -1,0 +1,29 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<style>html,body,#editor{height:100%;width:100%;margin:0;overflow:hidden;background:#090d18}body{padding-top:env(safe-area-inset-top)}</style>
+<script>var require={paths:{vs:'monaco/vs'},'vs/nls':{availableLanguages:{'*':'en'}}};</script>
+<script src="monaco/vs/loader.js"></script></head>
+<body><div id="editor"></div>
+<script>
+(function(){
+ let editor=null,ignore=false,queued={text:'',language:'plaintext'};
+ function post(value){const h=window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.dragonwingEditorChanged;if(h)h.postMessage(value);}
+ window.dragonwingSetState=function(state){
+  if(!state)return;queued=state;
+  if(!editor)return;
+  const model=editor.getModel();
+  if(model&&model.getValue()!==state.text){ignore=true;model.setValue(state.text||'');ignore=false;}
+  if(model)monaco.editor.setModelLanguage(model,state.language||'plaintext');
+ };
+ require(['vs/editor/editor.main'],function(){
+  editor=monaco.editor.create(document.getElementById('editor'),{
+   value:queued.text,language:queued.language||'plaintext',theme:'vs-dark',automaticLayout:true,
+   minimap:{enabled:false},fontSize:13,wordWrap:'on',scrollBeyondLastLine:false,
+   tabSize:2,insertSpaces:true,quickSuggestions:true,suggestOnTriggerCharacters:true,
+   bracketPairColorization:{enabled:true},padding:{top:10,bottom:10},renderWhitespace:'selection'
+  });
+  editor.onDidChangeModelContent(function(){if(!ignore)post(editor.getValue());});
+  window.dragonwingSetState(queued);
+ },function(error){document.body.innerHTML='<pre style="color:#f88;padding:16px">Monaco failed to load: '+String(error)+'</pre>';});
+})();
+</script></body></html>
