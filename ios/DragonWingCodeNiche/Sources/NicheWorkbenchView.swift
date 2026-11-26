@@ -202,7 +202,7 @@ private struct NicheTextDocument: FileDocument {
     init(configuration: ReadConfiguration) throws {
         text = String(decoding: configuration.file.regularFileContents ?? Data(), as: UTF8.self)
     }
-    func fileWrapper(configuration: WriteConfiguration) throws {
-        FileWrapper(regularFileWithContents: Data(text.utf8))
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        return FileWrapper(regularFileWithContents: Data(text.utf8))
     }
 }
