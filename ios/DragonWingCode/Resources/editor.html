@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<style>html,body,#container{height:100%;width:100%;margin:0;overflow:hidden;background:#090d18}#fallback{display:none;width:100%;height:100%;box-sizing:border-box;background:#090d18;color:#d7e1f5;border:0;outline:0;padding:14px;font:14px ui-monospace,monospace;resize:none}</style>
+<script>var require={paths:{vs:'monaco/vs'},'vs/nls':{availableLanguages:{'*':'en'}}};</script>
+<script src="monaco/vs/loader.js"></script></head>
+<body><div id="container"></div><textarea id="fallback" spellcheck="false"></textarea>
+<script>
+(function(){
+ let editor=null, current='', ignore=false;
+ const fallback=document.getElementById('fallback');
+ function post(v){if(window.webkit&&window.webkit.messageHandlers&&window.webkit.messageHandlers.editorChanged)window.webkit.messageHandlers.editorChanged.postMessage(v);}
+ function applyTheme(t){if(!editor)return;let light=t==='light';monaco.editor.setTheme(light?'vs':'vs-dark');document.body.style.background=light?'#f0f2f5':(t==='graphite'?'#191c21':t==='nord'?'#2e3440':'#090d18');}
+ window.dragonwingSetState=function(s){if(!s)return;current=s.text||'';if(editor){if(editor.getValue()!==current){ignore=true;editor.setValue(current);ignore=false;}applyTheme(s.theme||'midnight');if(editor.getModel())monaco.editor.setModelLanguage(editor.getModel(),s.language||'plaintext');}else{fallback.value=current;}};
+ try{
+  require(['vs/editor/editor.main'],function(){
+   editor=monaco.editor.create(document.getElementById('container'),{value:current,language:'javascript',theme:'vs-dark',automaticLayout:true,minimap:{enabled:false},fontSize:13,wordWrap:'on',scrollBeyondLastLine:false,tabSize:2,insertSpaces:true,quickSuggestions:true,suggestOnTriggerCharacters:true,bracketPairColorization:{enabled:true}});
+   editor.onDidChangeModelContent(function(){if(!ignore)post(editor.getValue());});
+   window.dragonwingSetState({text:current,theme:'midnight',language:'javascript'});
+  },function(){document.getElementById('container').style.display='none';fallback.style.display='block';fallback.addEventListener('input',()=>post(fallback.value));});
+ }catch(e){document.getElementById('container').style.display='none';fallback.style.display='block';fallback.addEventListener('input',()=>post(fallback.value));}
+})();
+</script></body></html>
