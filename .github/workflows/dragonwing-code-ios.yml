@@ -24,6 +24,10 @@ jobs:
           mkdir -p Resources/monaco
           cp -R .monaco-build/node_modules/monaco-editor/min/vs Resources/monaco/
 
+      - name: Generate DragonWing Code app icon
+        working-directory: ios/DragonWingCode
+        run: swift scripts/make-app-icon.swift
+
       - name: Generate Xcode project
         working-directory: ios/DragonWingCode
         run: xcodegen generate
