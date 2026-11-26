@@ -16,6 +16,14 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
+      - name: Install local Monaco Editor assets
+        working-directory: ios/DragonWingCode
+        run: |
+          set -euo pipefail
+          npm install --prefix .monaco-build monaco-editor@0.52.2 --no-save --ignore-scripts
+          mkdir -p Resources/monaco
+          cp -R .monaco-build/node_modules/monaco-editor/min/vs Resources/monaco/
+
       - name: Generate Xcode project
         working-directory: ios/DragonWingCode
         run: xcodegen generate
