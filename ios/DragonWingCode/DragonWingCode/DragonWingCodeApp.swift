@@ -2,10 +2,10 @@ import SwiftUI
 
 @main
 struct DragonWingCodeApp: App {
+    @StateObject private var themes = ThemeStore()
     var body: some Scene {
         WindowGroup {
-            WorkspaceView()
-                .preferredColorScheme(.dark)
+            WorkspaceView().environmentObject(themes)
         }
     }
 }
