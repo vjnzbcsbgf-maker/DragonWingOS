@@ -168,16 +168,24 @@ struct HelloWorld: View {
             }
             .padding(.horizontal, 12).frame(height: 36)
             .background(Color(red: 0.09, green: 0.10, blue: 0.13))
-            TextEditor(text: $source)
-                .font(.system(size: 13, weight: .regular, design: .monospaced))
-                .scrollContentBackground(.hidden)
-                .foregroundStyle(Color(red: 0.82, green: 0.86, blue: 0.91))
-                .padding(6)
+            MonacoEditorView(text: $source, language: editorLanguage)
                 .background(Color(red: 0.075, green: 0.085, blue: 0.11))
-                .autocorrectionDisabled()
-                .textInputAutocapitalization(.never)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var editorLanguage: String {
+        let ext = URL(fileURLWithPath: fileName).pathExtension.lowercased()
+        let languages: [String: String] = [
+            "swift": "swift", "js": "javascript", "mjs": "javascript", "cjs": "javascript",
+            "ts": "typescript", "tsx": "typescript", "jsx": "javascript", "py": "python",
+            "json": "json", "html": "html", "htm": "html", "css": "css", "scss": "scss",
+            "md": "markdown", "xml": "xml", "yaml": "yaml", "yml": "yaml", "sh": "shell",
+            "bash": "shell", "c": "c", "h": "cpp", "cpp": "cpp", "rs": "rust",
+            "go": "go", "java": "java", "kt": "kotlin", "sql": "sql", "php": "php",
+            "rb": "ruby", "toml": "ini", "ini": "ini"
+        ]
+        return languages[ext] ?? "plaintext"
     }
 
     private var statusBar: some View {
