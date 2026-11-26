@@ -18,7 +18,7 @@ struct EditorWebView: UIViewRepresentable {
         view.scrollView.backgroundColor = UIColor(theme.background)
         view.navigationDelegate = context.coordinator
         view.configuration.userContentController.add(context.coordinator, name: "editorChanged")
-        if let url = Bundle.main.url(forResource: "editor", withExtension: "html") {
+        if let url = Bundle.main.url(forResource: "editor", withExtension: "html", subdirectory: "Resources") ?? Bundle.main.url(forResource: "editor", withExtension: "html") {
             view.loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
         } else {
             view.loadHTMLString("<html><body><textarea style='width:100%;height:100%;background:#101522;color:white'></textarea></body></html>", baseURL: nil)
