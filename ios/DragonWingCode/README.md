@@ -23,6 +23,10 @@ The current app does not yet include a full Git client, debugger, language-serve
 
 Editing, local file storage, themes and the restricted console are designed to work offline. Open VSX search and package downloads require an Internet connection. Monaco's editor assets are fetched during CI and bundled in the IPA, not loaded from a CDN at runtime.
 
+## Next runtime phase
+
+The engineering plan for progressive VS Code extension compatibility (including Error Lens-style diagnostics) and the DragonWing Translation Kernel (DTK) is documented in [ARCHITECTURE-NEXT.md](ARCHITECTURE-NEXT.md). These are planned capabilities, not features in the current IPA. A normal iOS app cannot boot a replacement Linux kernel or run arbitrary Debian ELF binaries, so the DTK will begin as a sandboxed Linux-like userspace and must pass real-device tests before any Debian compatibility claim.
+
 ## Build
 
 The GitHub Actions workflow installs XcodeGen, downloads Monaco Editor assets, generates the app icon, builds the iOS device app without signing, packages an unsigned IPA, and builds the simulator app.
