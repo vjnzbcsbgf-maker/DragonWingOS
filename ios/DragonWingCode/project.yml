@@ -15,6 +15,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.dragonwing.code
         PRODUCT_NAME: DragonWing Code
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SWIFT_VERSION: 5.9
         TARGETED_DEVICE_FAMILY: "1,2"
         INFOPLIST_KEY_CFBundleDisplayName: DragonWing Code
