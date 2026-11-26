@@ -1,27 +1,30 @@
 # DragonWing Code for iOS
 
-DragonWing Code is the first native iPhone/iPad code-editor foundation in DragonWingOS.
+DragonWing Code is an independent, offline-first code workbench for iPhone and iPad, inspired by the Visual Studio Code workflow. It is not an official Microsoft product or a complete port of VS Code Desktop.
 
-## Current scope
-- Native SwiftUI interface with a dark, editor-focused layout
-- Local text/source editing
-- Open files through the iOS document picker
-- Export edited files through the iOS share/document exporter
-- iPhone and iPad target support
+## Implemented in this build
 
-## Important status
-This is **not a complete port of the Visual Studio Code desktop workbench**. VS Code Desktop is built on Electron, Node.js and native services that cannot simply be carried over to iOS. This initial implementation is a native mobile editor foundation. It does not yet include the VS Code extension host, integrated shell, debugger, language servers, full workspace/Git support, or Monaco.
+- Native SwiftUI workbench with Editor, Files, Terminal, Extensions and Themes tabs
+- Monaco Editor bundled into the app by CI, so the editor does not need a CDN at runtime
+- Local workspace storage in the app's Documents directory
+- Import source files through the iOS Files picker and save local edits
+- Four editor themes: Midnight, Graphite, Light and Nord
+- Sandboxed local command console with a deliberately limited command set
+- Open VSX search and VSIX package download when online
+- Generated iOS app icon included in the build
 
-The project deliberately uses the DragonWing Code name and does not present itself as an official Microsoft product.
+## iOS platform limits — important
+
+iOS apps run in a sandbox. The Terminal tab is a restricted command console, not a general Unix shell, and it does not provide root access or arbitrary process execution. Open VSX packages can be searched and downloaded, but a compatible VS Code extension host and activation runtime are not implemented yet. Many desktop extensions require Node.js native modules, desktop APIs or unrestricted process access and cannot run unchanged on iOS.
+
+The current app does not yet include a full Git client, debugger, language-server suite, unrestricted shell, remote-device protocol, or complete VS Code extension compatibility. Remote connections to a user-owned laptop or UNO Q remain future work.
+
+## Offline behavior
+
+Editing, local file storage, themes and the restricted console are designed to work offline. Open VSX search and package downloads require an Internet connection. Monaco's editor assets are fetched during CI and bundled in the IPA, not loaded from a CDN at runtime.
 
 ## Build
-The project uses XcodeGen.
 
-```sh
-brew install xcodegen
-cd ios/DragonWingCode
-xcodegen generate
-xcodebuild -project DragonWingCode.xcodeproj -scheme DragonWingCode -sdk iphonesimulator -configuration Debug CODE_SIGNING_ALLOWED=NO
-```
+The GitHub Actions workflow installs XcodeGen, downloads Monaco Editor assets, generates the app icon, builds the iOS device app without signing, packages an unsigned IPA, and builds the simulator app.
 
-To install on a physical iPhone, build/sign with Xcode using your own Apple development team. An unsigned build artifact is not installable by itself.
+To install on a physical iPhone, sign the app with your own Apple development identity. An unsigned IPA is not directly installable by itself. LiveContainer compatibility must be tested on-device and is not guaranteed by a successful Xcode build.
