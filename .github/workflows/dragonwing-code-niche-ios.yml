@@ -25,12 +25,18 @@ jobs:
         run: |
           set -euo pipefail
           xcodebuild -project DragonWingCodeNiche.xcodeproj -scheme DragonWingCodeNiche -sdk iphoneos -destination 'generic/platform=iOS' -configuration Release -derivedDataPath build-device CODE_SIGNING_ALLOWED=NO
-      - name: Package unsigned IPA
+      - name: Embed and verify Monaco in device app
         working-directory: ios/DragonWingCodeNiche
         run: |
           set -euo pipefail
           APP_PATH="build-device/Build/Products/Release-iphoneos/DragonWing Code Niche.app"
-          test -d "$APP_PATH"
+          bash scripts/embed-monaco.sh "$APP_PATH"
+      - name: Package and verify unsigned IPA
+        working-directory: ios/DragonWingCodeNiche
+        run: |
+          set -euo pipefail
+          APP_PATH="build-device/Build/Products/Release-iphoneos/DragonWing Code Niche.app"
+          test -s "$APP_PATH/Monaco/monaco/vs/loader.js"
           mkdir -p ipa/Payload
           ditto "$APP_PATH" "ipa/Payload/DragonWing Code Niche.app"
           cd ipa
@@ -38,10 +44,19 @@ jobs:
           cd ..
           test -s DragonWingCodeNiche-unsigned.ipa
           /usr/bin/unzip -t DragonWingCodeNiche-unsigned.ipa
+          /usr/bin/unzip -l DragonWingCodeNiche-unsigned.ipa | grep -q 'Payload/DragonWing Code Niche.app/Monaco/monaco/vs/loader.js'
+          echo "Verified Monaco loader is present inside the IPA."
       - name: Build simulator app
         working-directory: ios/DragonWingCodeNiche
         run: |
+          set -euo pipefail
           xcodebuild -project DragonWingCodeNiche.xcodeproj -scheme DragonWingCodeNiche -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -configuration Debug -derivedDataPath build-simulator CODE_SIGNING_ALLOWED=NO
+      - name: Embed and verify Monaco in simulator app
+        working-directory: ios/DragonWingCodeNiche
+        run: |
+          set -euo pipefail
+          APP_PATH="build-simulator/Build/Products/Debug-iphonesimulator/DragonWing Code Niche.app"
+          bash scripts/embed-monaco.sh "$APP_PATH"
       - name: Upload unsigned IPA
         uses: actions/upload-artifact@v4
         with:
