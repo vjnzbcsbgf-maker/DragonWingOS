@@ -1,0 +1,55 @@
+name: DragonWing Code Niche iOS
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "ios/DragonWingCodeNiche/**"
+      - ".github/workflows/dragonwing-code-niche-ios.yml"
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        working-directory: ios/DragonWingCodeNiche
+        run: xcodegen generate
+      - name: Build unsigned iOS device app
+        working-directory: ios/DragonWingCodeNiche
+        run: |
+          set -euo pipefail
+          xcodebuild -project DragonWingCodeNiche.xcodeproj -scheme DragonWingCodeNiche -sdk iphoneos -destination 'generic/platform=iOS' -configuration Release -derivedDataPath build-device CODE_SIGNING_ALLOWED=NO
+      - name: Package unsigned IPA
+        working-directory: ios/DragonWingCodeNiche
+        run: |
+          set -euo pipefail
+          APP_PATH="build-device/Build/Products/Release-iphoneos/DragonWing Code Niche.app"
+          test -d "$APP_PATH"
+          mkdir -p ipa/Payload
+          ditto "$APP_PATH" "ipa/Payload/DragonWing Code Niche.app"
+          cd ipa
+          /usr/bin/zip -qry ../DragonWingCodeNiche-unsigned.ipa Payload
+          cd ..
+          test -s DragonWingCodeNiche-unsigned.ipa
+          /usr/bin/unzip -t DragonWingCodeNiche-unsigned.ipa
+      - name: Build simulator app
+        working-directory: ios/DragonWingCodeNiche
+        run: |
+          xcodebuild -project DragonWingCodeNiche.xcodeproj -scheme DragonWingCodeNiche -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -configuration Debug -derivedDataPath build-simulator CODE_SIGNING_ALLOWED=NO
+      - name: Upload unsigned IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragonWingCodeNiche-unsigned-IPA
+          path: ios/DragonWingCodeNiche/DragonWingCodeNiche-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload simulator build
+        uses: actions/upload-artifact@v4
+        with:
+          name: DragonWingCodeNiche-iOS-Simulator
+          path: "ios/DragonWingCodeNiche/build-simulator/Build/Products/Debug-iphonesimulator/DragonWing Code Niche.app"
+          if-no-files-found: error
+          retention-days: 30
